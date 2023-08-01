@@ -18,12 +18,13 @@ namespace Features.Refactor
         public event Action OnLoadFailed;
         public async Task<T> LoadFromAPI<T>(string path, string token) where T : class
         {
-            loadingPathsRetries[path]++;
+            loadingPathsRetries[path] = loadingPathsRetries.ContainsKey(path) ? loadingPathsRetries[path]++ : 1;
             try
             {
                 //here I would do something more generic on API Service, instead of this concrete method
                 var data = APIServices.DatabaseServer.GetUserInfo(token) as T;
                 IsLoaded = true;
+                loadingPathsRetries.Remove(path);
                 return data;
             }
             catch (Exception e)
@@ -39,11 +40,6 @@ namespace Features.Refactor
                 }
             }
             return null;
-        }
-
-        public T GetData<T>(string jsonFile)
-        {
-           return JsonConvert.DeserializeObject<T>(jsonFile);
         }
         
         public bool IsLoadingFromAPI(string path)
