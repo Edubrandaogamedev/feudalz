@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27044a747e2bee48a9f319948689955, type: 3}
+  m_Name: Death Prophet
+  m_EditorClassIdentifier: 
+  heroName: Death Prophet
+  heroImg: {fileID: 21300000, guid: 77290f3ea0d20be409159bc775a6e104, type: 3}
+  heroCard: {fileID: 21300000, guid: 647a1757612161241972f50ab6e086e5, type: 3}
+  rarities:
+  - {fileID: 11400000, guid: eaae6abd8b533204aaea23afbee17e2c, type: 2}
+  - {fileID: 11400000, guid: 8fa49e1cfa66cff45aa35c029da3879b, type: 2}
+  - {fileID: 11400000, guid: 58e40c1f509b0964baa51466029ac1b5, type: 2}
+  - {fileID: 11400000, guid: 193e8d9a147f55343adcabcd07f8bb48, type: 2}
+  - {fileID: 11400000, guid: 31d34020d716dbc4f95c7fcbb26ad643, type: 2}
+  cards:
+  - {fileID: 11400000, guid: bf0931bc2a0fd8d41a371bff9c99a4f7, type: 2}
+  heroDescription: Death Prophet has a death touch ability, a victory in battle means
+    you will receive max goldz.
+  heroSkillName: Death Wisper

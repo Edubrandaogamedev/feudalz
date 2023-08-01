@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f27044a747e2bee48a9f319948689955, type: 3}
+  m_Name: GodjiraData
+  m_EditorClassIdentifier: 
+  heroName: godjira
+  heroImg: {fileID: 21300000, guid: dab157204b9872f4c9498a9bd38cc432, type: 3}
+  heroCard: {fileID: 21300000, guid: cba2d97b93142474b9b85939b6dd97dd, type: 3}
+  rarities:
+  - {fileID: 11400000, guid: eaae6abd8b533204aaea23afbee17e2c, type: 2}
+  - {fileID: 11400000, guid: 8fa49e1cfa66cff45aa35c029da3879b, type: 2}
+  - {fileID: 11400000, guid: 58e40c1f509b0964baa51466029ac1b5, type: 2}
+  - {fileID: 11400000, guid: 193e8d9a147f55343adcabcd07f8bb48, type: 2}
+  cards:
+  - {fileID: 11400000, guid: b43cf145badd17346897904c36c69ce9, type: 2}
+  - {fileID: 11400000, guid: ae8cd09f5fd980040bf07508a9a663cd, type: 2}
+  - {fileID: 11400000, guid: 1b7f4cafdfbd38243ad9fa62a284bd17, type: 2}
+  - {fileID: 11400000, guid: 4e6ae2a554a054d4fa9d06a6510aedbd, type: 2}
+  heroDescription: 'This hero have a chance to ignore the enemy defense.
+
+    <color=yellow>Activation
+    Rate:</color>'
+  heroSkillName: Godjira Breath
