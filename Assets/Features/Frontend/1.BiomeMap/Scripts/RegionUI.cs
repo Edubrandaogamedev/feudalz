@@ -51,7 +51,7 @@ public class RegionUI : MonoBehaviour
     {
         foreach (var land in targetLandzs)
         {
-            var foundLand = userSessionController.CombatLandzs.Find(searchingLand => searchingLand.tokenId == land.TokenId);
+            var foundLand = userSessionController.DataController.GetAllLandz().Find(searchingLand => searchingLand.tokenId == land.TokenId);
             land.Setup(userSessionController.Token,foundLand);
         }
     }

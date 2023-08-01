@@ -73,8 +73,8 @@ public class WorldMapManager : MonoBehaviour
     {
         foreach (WorldMapClickableRegion regionButton in clickableRegions)
         {
-            regionButton.SetUserLands(userSessionController, userSessionController.CombatLandzs);
-            regionButton.SetUserLandsAttacks(userSessionController, userSessionController.CombatLandzs);
+            regionButton.SetUserLands(userSessionController, userSessionController.DataController.GetAllLandz());
+            regionButton.SetUserLandsAttacks(userSessionController, userSessionController.DataController.GetAllLandz());
         }
     }
 }

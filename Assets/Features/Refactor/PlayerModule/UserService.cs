@@ -28,6 +28,7 @@ namespace Features.Refactor
             if (!_userInformationLoaderService.IsLoaded)
             {
                 _userSessionController.InitializeSession(LoadUserInformation<UserInfo>(token));
+                _userInformationLoaderService.LoadNFTImagePerBatch(_userSessionController.DataController.GetAllUnits());
             }
         }
         

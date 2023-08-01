@@ -89,7 +89,7 @@ public class ZestriaLandzManager : MonoBehaviour
     private void TryAttackAll()
     {
         var goldzCost = 0.25f;
-        var totalCost = userSessionController.CombatLandzs.Where(landz => landz.attacks > 0 && landz.health > 0).Sum(landz => landz.attacks * goldzCost);
+        var totalCost = userSessionController.DataController.GetAllLandz().Where(landz => landz.attacks > 0 && landz.health > 0).Sum(landz => landz.attacks * goldzCost);
         if (SkipPopup.GetSettings())
             OnAttackWithAllLandzConfirmation(totalCost);
         else
@@ -111,8 +111,8 @@ public class ZestriaLandzManager : MonoBehaviour
             if (result.attacker.hero != null && result.attacker.hero.bonus)
                 heroezResponseFilter.OnHeroSkillActivated(userSessionController, result.attacker.hero.name, result.attacker.land.id);
         }
-        userSessionController.ChangeGoldz(-_goldzCost);
-        userSessionController.ChangeGoldz(_attackAllResult.goldz);
+        userSessionController.DataController.UpdateTokenBalance(-_goldzCost);
+        userSessionController.DataController.UpdateTokenBalance(_attackAllResult.goldz);
         userSessionController.SetTotalAttacks();
         SetControllerInfos();
     }
@@ -158,7 +158,7 @@ public class ZestriaLandzManager : MonoBehaviour
     }
     private async Task LoadAllPlayerLandzTexture(UserSessionController userSessionController)
     {
-        foreach (var landz in userSessionController.CombatLandzs)
+        foreach (var landz in userSessionController.DataController.GetAllLandz())
         {
             try
             {
@@ -212,7 +212,7 @@ public class ZestriaLandzManager : MonoBehaviour
         {
             RechargeAll rechargeAllResult = null;
             rechargeAllResult = await APIServices.DatabaseServer.RechargeAllLandz(userSessionController.Token, "");
-            userSessionController.ChangeGoldz(-rechargeAllResult.rechargeCost);
+            userSessionController.DataController.UpdateTokenBalance(-rechargeAllResult.rechargeCost);
             DateTimeOffset.TryParse(rechargeAllResult.timestamp, out var rechargeTimeStamp);
             foreach (var landzID in rechargeAllResult.rechargedLandzID)
                 userSessionController.RechargeLandz(landzID, rechargeTimeStamp);
@@ -231,11 +231,11 @@ public class ZestriaLandzManager : MonoBehaviour
     }
     private void TryHealAll()
     {
-        var noHealthLandzCounter = userSessionController.CombatLandzs.Count(landz => landz.health <= 0);
-        var goldzCost = userSessionController.HealCosts.goldz * noHealthLandzCounter;
-        var resourceCost = new int[] {userSessionController.HealCosts.consumables.weapons*noHealthLandzCounter,
-        userSessionController.HealCosts.consumables.armors*noHealthLandzCounter,
-        userSessionController.HealCosts.consumables.foodCrate*noHealthLandzCounter};
+        var noHealthLandzCounter = userSessionController.DataController.GetAllLandz().Count(landz => landz.health <= 0);
+        var goldzCost = userSessionController.DataController.HealLandzGoldz * noHealthLandzCounter;
+        var resourceCost = new int[] {userSessionController.DataController.HealLandzItems.weapons*noHealthLandzCounter,
+        userSessionController.DataController.HealLandzItems.armors*noHealthLandzCounter,
+        userSessionController.DataController.HealLandzItems.foodCrate*noHealthLandzCounter};
         popupController.EnableFixConfirmationPoup((goldz) => OnHealAllConfirmation(goldzCost, resourceCost, goldz), goldzCost, resourceCost);
     }
     private async void OnHealAllConfirmation(float _goldzCost, int[] resourceCost, bool _goldz)
@@ -245,7 +245,7 @@ public class ZestriaLandzManager : MonoBehaviour
         {
             var response = await APIServices.DatabaseServer.FixAllLandz(userSessionController.Token, _goldz);
             if (_goldz)
-                userSessionController.ChangeGoldz(-_goldzCost);
+                userSessionController.DataController.UpdateTokenBalance(-_goldzCost);
             else
             {
                 userSessionController.UpdateInventoryItem("Weapons", -resourceCost[0]);
@@ -266,9 +266,9 @@ public class ZestriaLandzManager : MonoBehaviour
                 popupController.ErrorHandler(userSessionController.DataController.TokenBalance < _goldzCost ? "Goldz" : "Request");
             else
             {
-                var weapon = userSessionController.InventoryItens.Find(weapon => weapon.name == "Weapons");
-                var armors = userSessionController.InventoryItens.Find(armor => armor.name == "Armors");
-                var foodCrate = userSessionController.InventoryItens.Find(food => food.name == "Food Crate");
+                var weapon = userSessionController.DataController.Consumables.Find(weapon => weapon.name == "Weapons");
+                var armors = userSessionController.DataController.Consumables.Find(armor => armor.name == "Armors");
+                var foodCrate = userSessionController.DataController.Consumables.Find(food => food.name == "Food Crate");
                 if (weapon == null || armors == null || foodCrate == null || weapon?.quantity < resourceCost[0] || armors?.quantity < resourceCost[1] || foodCrate.quantity < resourceCost[2])
                     popupController.ErrorHandler("Resources");
                 else
@@ -293,7 +293,7 @@ public class ZestriaLandzManager : MonoBehaviour
     private void SetAvaiablesAttack()
     {
         var attackCounter = 0;
-        foreach (var landz in userSessionController.CombatLandzs)
+        foreach (var landz in userSessionController.DataController.GetAllLandz())
         {
             attackCounter += landz.maxAttacks;
         }
@@ -304,7 +304,7 @@ public class ZestriaLandzManager : MonoBehaviour
     private void SetAvaiableRechargeLandz()
     {
         var avaiableRechargeLandz = 0;
-        foreach (var landz in userSessionController.CombatLandzs)
+        foreach (var landz in userSessionController.DataController.GetAllLandz())
         {
             if (landz.attacks > 0 || landz.health <= 0) continue;
             var lastRechargeTime = DateTimeOffset.Parse(landz.timeStamp);
@@ -316,15 +316,15 @@ public class ZestriaLandzManager : MonoBehaviour
             if ((nextRechargeTime - DateTimeOffset.UtcNow).Seconds < 0)
                 avaiableRechargeLandz++;
         }
-        rechargeAvaiablesText.text = avaiableRechargeLandz + "/" + userSessionController.CombatLandzs.Count;
-        rechargeAvaiableBar.fillAmount = (float)avaiableRechargeLandz / userSessionController.CombatLandzs.Count;
+        rechargeAvaiablesText.text = avaiableRechargeLandz + "/" + userSessionController.DataController.GetAllLandz().Count;
+        rechargeAvaiableBar.fillAmount = (float)avaiableRechargeLandz / userSessionController.DataController.GetAllLandz().Count;
         btnRechargeAll.interactable = avaiableRechargeLandz > 0;
     }
     private void SetAvaiablesHealLandz()
     {
-        var noHealthLandzCounter = userSessionController.CombatLandzs.Count(landz => landz.health <= 0);
-        healAvaiablesText.text = noHealthLandzCounter + "/" + userSessionController.CombatLandzs.Count;
-        healAvaiableBar.fillAmount = (float)noHealthLandzCounter / userSessionController.CombatLandzs.Count;
+        var noHealthLandzCounter = userSessionController.DataController.GetAllLandz().Count(landz => landz.health <= 0);
+        healAvaiablesText.text = noHealthLandzCounter + "/" + userSessionController.DataController.GetAllLandz().Count;
+        healAvaiableBar.fillAmount = (float)noHealthLandzCounter / userSessionController.DataController.GetAllLandz().Count;
         btnHealAll.interactable = noHealthLandzCounter > 0;
     }
     private void CheckAttackAllButton()
@@ -335,9 +335,9 @@ public class ZestriaLandzManager : MonoBehaviour
     private void SetResourcesInfo()
     {
         goldzQuantity.text = "Total Amount\n" + userSessionController.DataController.TokenBalance;
-        weaponsQuantity.text = "Total Amount\n" + GetResourcesInfo("Weapons", userSessionController.InventoryItens).ToString();
-        armorsQuantity.text = "Total Amount:\n" + GetResourcesInfo("Armors", userSessionController.InventoryItens).ToString();
-        foodQuantity.text = "Total Amount\n" + GetResourcesInfo("Food Crate", userSessionController.InventoryItens).ToString();
+        weaponsQuantity.text = "Total Amount\n" + GetResourcesInfo("Weapons", userSessionController.DataController.Consumables);
+        armorsQuantity.text = "Total Amount:\n" + GetResourcesInfo("Armors", userSessionController.DataController.Consumables);
+        foodQuantity.text = "Total Amount\n" + GetResourcesInfo("Food Crate", userSessionController.DataController.Consumables);
     }
     private int GetResourcesInfo(string resourceType, List<InventoryItem> inventoryItems)
     {

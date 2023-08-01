@@ -31,7 +31,7 @@ public class AllLandzBattleUI : MonoBehaviour
     private Task loadingTexture;
     public void Setup(AttackResult _result, UserSessionController userSessionController)
     {
-        var foundLandz = userSessionController.CombatLandzs.Find(landz => landz.tokenId == _result.attacker.land.id);
+        var foundLandz = userSessionController.DataController.GetAllLandz().Find(landz => landz.tokenId == _result.attacker.land.id);
         playerLandzId.text = "Landz\n" + _result.attacker.land.name;
         playerLandzCombatInfo.text = "Attack Bonus\n" + foundLandz.attackBonus.ToString();
         playerLandzDice.text = "You rolled\n" + _result.attacker.dice.ToString();

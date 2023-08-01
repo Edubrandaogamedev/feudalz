@@ -92,7 +92,7 @@ public class InfoUIProductionManager : MonoBehaviour
         CloseDeployPanel();
         CloseCraftingPanel();
         ResetBuildQuantityValues();
-        var avaiableProductionBuilds = GetAllAvaiableProductionBuilds(userSessionController.CombatLandzs);
+        var avaiableProductionBuilds = GetAllAvaiableProductionBuilds(userSessionController.DataController.GetAllLandz());
         SetResourceManagerPanel(avaiableProductionBuilds);
     }
     public void UpdateProductionPanel()
@@ -332,13 +332,13 @@ public class InfoUIProductionManager : MonoBehaviour
                 ResourceData data;
                 if (harvestItem.Key.Contains("Dragon"))
                 {
-                    data = productionUI.BatchItemName.Contains("Dragon") ? userSessionController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Dragon")) : userSessionController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Hero"));
+                    data = productionUI.BatchItemName.Contains("Dragon") ? userSessionController.DataController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Dragon")) : userSessionController.DataController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Hero"));
                 }
                 else if (harvestItem.Key.Contains("babyDragon") || harvestItem.Key.Contains("etherman") || harvestItem.Key.Contains("godjira") || harvestItem.Key.Contains("lys")
                          || harvestItem.Key.Contains("urzog") || harvestItem.Key.Contains("yokai") || harvestItem.Key.Contains("guttx"))
-                    data = userSessionController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Hero"));
+                    data = userSessionController.DataController.BuildingResourceData.Find(resource => resource.ResourceName.Contains("Hero"));
                 else
-                    data = userSessionController.BuildingResourceData.Find(resource => resource.ResourceName == harvestItem.Key);
+                    data = userSessionController.DataController.BuildingResourceData.Find(resource => resource.ResourceName == harvestItem.Key);
                 productionUI.FeedbackQuantity = DefineQuantityText(harvestItem);
                 productionUI.ItemImage.sprite = data.ResourceImg;
                 productionUI.SetupClaimFeedback(claimAllButton.transform);
@@ -419,7 +419,7 @@ public class InfoUIProductionManager : MonoBehaviour
         {
             foreach (var resource in resourcePoolList)
                 resource.gameObject.SetActive(true);
-            var avaiableProductionResources = GetAllAvaiableProductionResources(userSessionController.CombatLandzs);
+            var avaiableProductionResources = GetAllAvaiableProductionResources(userSessionController.DataController.GetAllLandz());
             CheckUnusedResourcePoolObject(avaiableProductionResources);
         }
     }
@@ -545,14 +545,14 @@ public class InfoUIProductionManager : MonoBehaviour
                 {
                     var productCraftingOptions = build.allowedCraftings.ToList().FindAll(option => option.productType == resource.productType);
                     var clone = Instantiate(productTemplate, buildingContent);
-                    clone.Setup(resource, userSessionController.BuildingResourceData, build, build.allowedCraftings.ToList());
+                    clone.Setup(resource, userSessionController.DataController.BuildingResourceData, build, build.allowedCraftings.ToList());
                     resourcePoolList.Add(clone);
                     existingOption.Add(clone.ProductType);
                 }
                 LayoutRebuilder.ForceRebuildLayoutImmediate(buildingContent);
             }
         }
-        CheckUnusedResourcePoolObject(GetAllAvaiableProductionResources(userSessionController.CombatLandzs));
+        CheckUnusedResourcePoolObject(GetAllAvaiableProductionResources(userSessionController.DataController.GetAllLandz()));
     }
     private void SetProductionPanel(List<Batch> batches)
     {
@@ -565,12 +565,12 @@ public class InfoUIProductionManager : MonoBehaviour
                 {
                     existingBatch.gameObject.SetActive(true);
                 }
-                existingBatch.Setup(batch, userSessionController.BuildingResourceData);
+                existingBatch.Setup(batch, userSessionController.DataController.BuildingResourceData);
             }
             else
             {
                 var clone = Instantiate(productionTemplate, productionContent);
-                clone.Setup(batch, userSessionController.BuildingResourceData);
+                clone.Setup(batch, userSessionController.DataController.BuildingResourceData);
                 clone.RegisterListeners(OnClaim, OnTryCancel);
                 clone.RegisterAutoCraftListener(ChangeAutoCraftSettings);
                 clone.CanvasScene = mainCanvas;
@@ -650,10 +650,10 @@ public class InfoUIProductionManager : MonoBehaviour
             else
                 repeatResourceCount = 0;
             var option = _resource.CraftingOptions[index];
-            var foundData = userSessionController.BuildingResourceData.Find(resource => resource.ResourceName == option.productType);
+            var foundData = userSessionController.DataController.BuildingResourceData.Find(resource => resource.ResourceName == option.productType);
             if (foundData == null) continue;
             var clone = Instantiate(craftingTemplate, craftingContent);
-            clone.Setup(option, userSessionController.BuildingResourceData, GetCorretIndex(_resource.OriginalCraftingOptions, _resource.CraftingOptions[index].productType) + repeatResourceCount, userSessionController);
+            clone.Setup(option, userSessionController.DataController.BuildingResourceData, GetCorretIndex(_resource.OriginalCraftingOptions, _resource.CraftingOptions[index].productType) + repeatResourceCount, userSessionController);
             craftingPoolList.Add(clone);
         }
         GreyOutResources();
@@ -675,7 +675,7 @@ public class InfoUIProductionManager : MonoBehaviour
         {
             foreach (var resource in crafting.ResourcesNeeded)
             {
-                var inventoryItem = userSessionController.InventoryItens.Find(item => item.name == resource.Type);
+                var inventoryItem = userSessionController.DataController.Consumables.Find(item => item.name == resource.Type);
                 if (inventoryItem != null && inventoryItem.quantity >= resource.BaseQuantity) continue;
                 crafting.BlockResource();
                 crafting.transform.SetAsLastSibling();

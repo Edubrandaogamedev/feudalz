@@ -19,16 +19,22 @@ namespace Features.Refactor
         private List<int> _uniqueLandzID = new List<int>();
         
         private Dictionary<UnitType, List<FeudalzUnit>> _unitsData;
-        private List<InventoryItem> _consumables;
         private List<FeudalzHeroez> _heroez;
         private List<FeudalzCombatLandz> _combatLandzs; 
         private FeudalzBonus _feudalzBonus;
         private HealLandzCost _healLandzCost;
+        
         public List<Batch> ProductionItems { get; private set;}
+        public List<InventoryItem> Consumables { get; private set; }
         public float TokenBalance { get; private set; }
         public int BonusChargeLeft => _feudalzBonus.chargesLeft;
         public int BonusMaxCharge => _feudalzBonus.chargesMax;
         public string LastBonusReset => _feudalzBonus.timestamp;
+        public ConsumablesCost HealLandzItems => _healLandzCost.consumables;
+        public float HealLandzGoldz => _healLandzCost.goldz;
+        public List<ResourceData> BuildingResourceData => _buildingResourceData;
+
+        public List<BuildingData> BuildingDatas => _buildingDatas;
 
         private List<InventoryItem> ProcessConsumablesData(Dictionary<string, InventoryItem> items)
         {
@@ -64,7 +70,7 @@ namespace Features.Refactor
             {
                 FeudalzCombatLandz combatLandz = new FeudalzCombatLandz(landz,_healLandzCost.goldz);
                 combatLandz.SetupHeroUnit(landz.hero, _heroezLocalData);
-                combatLandz.SetupAllowedLandzBuildings(landz.allowedBuildings, _buildingDatas,_consumables);
+                combatLandz.SetupAllowedLandzBuildings(landz.allowedBuildings, _buildingDatas,Consumables);
                 combatLandz.SetupAllocatedBuilds(landz.allocatedBuildings, _buildingDatas);
                 if (_uniqueLandzID.Contains(landz.tokenId))
                 {
@@ -87,14 +93,19 @@ namespace Features.Refactor
             _unitsData = userData.userFeudalz.Units;
             _feudalzBonus = userData.feudalzBonus;
             _healLandzCost = userData.healLandCost;
-            _consumables = ProcessConsumablesData(userData.consumables);
             _heroez = ProcessHeroezData(userData.heroez,_heroezLocalData);
             _combatLandzs = ProcessCombatLandzsData(userData.landz);
             
             TokenBalance = userData.goldz;
             ProductionItems = userData.batches;
+            Consumables = ProcessConsumablesData(userData.consumables);
         }
 
+        public Dictionary<UnitType, List<FeudalzUnit>> GetAllUnits()
+        {
+            return _unitsData;
+        }
+        
         public List<FeudalzUnit> GetAllUnitsByType(UnitType unitType)
         {
             if (!_unitsData.ContainsKey(unitType))
@@ -127,7 +138,7 @@ namespace Features.Refactor
         {
             return _combatLandzs;
         }
-
+        
         public List<FeudalzHeroez> GetAllHeroez()
         {
             return _heroez;

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Features.Refactor
 {
@@ -7,5 +8,6 @@ namespace Features.Refactor
         public bool IsLoaded { get; }
         public Task<T> LoadFromAPI<T>(string path, string token) where T: class;
         public bool IsLoadingFromAPI(string path);
+        public Task LoadNFTImagePerBatch(Dictionary<UnitType, List<FeudalzUnit>> units);
     }
 }

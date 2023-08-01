@@ -25,11 +25,11 @@ public class InfoUIResource : MonoBehaviour
     }
     public void SetResourcesInfo(UserSessionController userSessionController)
     {
-        foreach (var resource in userSessionController.BuildingResourceData)
+        foreach (var resource in userSessionController.DataController.BuildingResourceData)
         {
             if (resource.ResourceName == "Dragon" || resource.ResourceName == "randomHero") continue;
             var clone = Instantiate(resourceInfoTemplate, resourceContent);
-            clone.Setup(resource, GetInventoryResourceQuantity(resource.ResourceName, userSessionController.InventoryItens));
+            clone.Setup(resource, GetInventoryResourceQuantity(resource.ResourceName, userSessionController.DataController.Consumables));
             resources.Add(clone);
         }
         OrderByAmount();
@@ -50,7 +50,7 @@ public class InfoUIResource : MonoBehaviour
         foreach (var resource in resources)
         {
             if (resource.Type == "Dragon" || resource.Type == "Heroez") continue;
-            var inventoryItem = userSessionController.InventoryItens.Find(item => item.name == resource.Type);
+            var inventoryItem = userSessionController.DataController.Consumables.Find(item => item.name == resource.Type);
             if (inventoryItem != null)
                 resource.UpdateQuantity(inventoryItem.quantity);
         }

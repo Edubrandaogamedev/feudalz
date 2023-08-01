@@ -19,7 +19,7 @@ public class RegionLandzPanel : MonoBehaviour
         {
             CombatLandz clone = Instantiate(landzTemplate,landzContent.transform);
             clone.gameObject.name = "CombatLandz" + index;
-            var foundedCombatLandz = userSessionController.CombatLandzs.Find(land => land.tokenId == landz.tokenId);
+            var foundedCombatLandz = userSessionController.DataController.GetAllLandz().Find(land => land.tokenId == landz.tokenId);
             clone.Setup(userSessionController.Token, landz);
             combatLandz.Add(clone);
             index ++;

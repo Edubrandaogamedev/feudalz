@@ -92,7 +92,7 @@ public class AllocationSystem : MonoBehaviour
                 if (feudalzHeroez.heroQuantity == 0)
                     userSessionController.DataController.GetAllHeroez().Remove(cachedHeroez);
             }
-            userSessionController.CombatLandzs.Find(land => land.tokenId == cachedLandz.TokenId).heroez = cachedHeroez;
+            userSessionController.DataController.GetAllLandz().Find(land => land.tokenId == cachedLandz.TokenId).heroez = cachedHeroez;
             cachedLandz.OnHeroAllocationSuccessful(cachedHeroez);
             onHeroAllocationCompleted?.Invoke();
             CloseAllocationPanel();
@@ -187,13 +187,13 @@ public class AllocationSystem : MonoBehaviour
             if (index < panelBuildings.Count)
             {
                 panelBuildings[index].gameObject.SetActive(true);
-                panelBuildings[index].Setup(build,_position,userSessionController.BuildingResourceData);
+                panelBuildings[index].Setup(build,_position,userSessionController.DataController.BuildingResourceData);
                 panelBuildings[index].RegisterBuyListener(OnTryAllocateBuild);
             }
             else
             {
                 BuildingAllocationTemplate clone = Instantiate(buildingsTemplate,buildingContent);
-                clone.Setup(build,_position,userSessionController.BuildingResourceData);
+                clone.Setup(build,_position,userSessionController.DataController.BuildingResourceData);
                 clone.RegisterBuyListener(OnTryAllocateBuild);
                 panelBuildings.Add(clone);            
             }
@@ -219,7 +219,7 @@ public class AllocationSystem : MonoBehaviour
             }
             else
             {
-                var inventoryItem = userSessionController.InventoryItens.Find(item => item.name == build.ResourceType);
+                var inventoryItem = userSessionController.DataController.Consumables.Find(item => item.name == build.ResourceType);
                 if (inventoryItem != null && inventoryItem.quantity >= build.ResourceCost) continue;
                 build.BlockBuild();
                 build.transform.SetAsLastSibling();

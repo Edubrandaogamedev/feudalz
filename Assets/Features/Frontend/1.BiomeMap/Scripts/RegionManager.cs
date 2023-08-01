@@ -70,9 +70,9 @@ public class RegionManager : MonoBehaviour
     }
     private void OnTryFixLandz(CombatLandz _landz, float _goldzCost, bool goldz)
     {
-        var resourceCost = new int[] {userSessionController.HealCosts.consumables.weapons,
-        userSessionController.HealCosts.consumables.armors,
-        userSessionController.HealCosts.consumables.foodCrate};
+        var resourceCost = new int[] {userSessionController.DataController.HealLandzItems.weapons,
+        userSessionController.DataController.HealLandzItems.armors,
+        userSessionController.DataController.HealLandzItems.foodCrate};
         regionUI.PopupController.EnableFixConfirmationPoup((goldz) => OnFixLandzConfirmation(_landz, _goldzCost, goldz), _goldzCost, OnFixLandzCanceled, goldz, resourceCost);
     }
     private async void OnFixLandzConfirmation(CombatLandz _landz, float _goldzCost, bool goldz)
@@ -82,10 +82,10 @@ public class RegionManager : MonoBehaviour
         {
             await APIServices.DatabaseServer.FixLandz(userSessionController.Token, _landz.TokenId, goldz);
             _landz.OnFixLandzSuccessful();
-            userSessionController.ChangeGoldz(-_goldzCost);
-            userSessionController.UpdateInventoryItem("Weapons", userSessionController.HealCosts.consumables.weapons);
-            userSessionController.UpdateInventoryItem("Armors", userSessionController.HealCosts.consumables.armors);
-            userSessionController.UpdateInventoryItem("Food Crate", userSessionController.HealCosts.consumables.foodCrate);
+            userSessionController.DataController.UpdateTokenBalance(-_goldzCost);
+            userSessionController.UpdateInventoryItem("Weapons", userSessionController.DataController.HealLandzItems.weapons);
+            userSessionController.UpdateInventoryItem("Armors", userSessionController.DataController.HealLandzItems.armors);
+            userSessionController.UpdateInventoryItem("Food Crate", userSessionController.DataController.HealLandzItems.foodCrate);
             userSessionController.SetLandzHp(_landz.TokenId, _landz.LandzHp);
             userSessionController.SetTotalAttacks();
             userSessionController.SetBiomeAttacks();
@@ -150,7 +150,7 @@ public class RegionManager : MonoBehaviour
         {
             RechargeAll rechargeAllResult = null;
             rechargeAllResult = await APIServices.DatabaseServer.RechargeAllLandz(userSessionController.Token, userSessionController.CurrentUserLandzBioma);
-            userSessionController.ChangeGoldz(-rechargeAllResult.rechargeCost);
+            userSessionController.DataController.UpdateTokenBalance(-rechargeAllResult.rechargeCost);
             DateTimeOffset.TryParse(rechargeAllResult.timestamp, out var rechargeTimeStamp);
             foreach (var landzID in rechargeAllResult.rechargedLandzID)
             {

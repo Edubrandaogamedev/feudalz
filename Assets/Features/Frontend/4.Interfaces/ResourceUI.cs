@@ -31,7 +31,7 @@ public class ResourceUI : MonoBehaviour
         resourceImg.sprite = _resourceImg;
         // for (int i = 0; i < _userSessionDataManager.InventoryItens.Count; i++)
         // { 
-        var foundedResource = userSessionController.InventoryItens.Find(item => item.name == _resourceType);
+        var foundedResource = userSessionController.DataController.Consumables.Find(item => item.name == _resourceType);
         if (foundedResource != null)
         {
             CachedResourceQuantity = foundedResource.quantity;

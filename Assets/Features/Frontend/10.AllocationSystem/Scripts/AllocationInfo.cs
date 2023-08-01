@@ -83,7 +83,7 @@ public class AllocationInfo : MonoBehaviour
         await APIServices.DatabaseServer.RemoveAllocatedHero(userSessionController.Token, cachedLandz.TokenId);
         lockInputPanel.Disable();
         allocatedHero.UnlockInput();
-        userSessionController.CombatLandzs.Find(land => land.tokenId == cachedLandz.TokenId).heroez = null;
+        userSessionController.DataController.GetAllLandz().Find(land => land.tokenId == cachedLandz.TokenId).heroez = null;
         cachedLandz.OnHeroRemoveSuccessful();
         popupController.DisablePopup();
         CloseInfoPanel();
